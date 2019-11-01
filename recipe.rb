@@ -15,13 +15,15 @@ class Recipe
 
     def save
         @@all_recipes << self
-    end 
+    end
 
     def self.get_recipes_by_ingredient(ingredient)
         uri = URI("#{BASE_URL}i=#{ingredient}")
         response = Net::HTTP.get(uri)
+
         res_json = JSON(response)
         return res_json["results"]
+
     end
 
     def self.create_recipes_from_list(ingredient)
@@ -29,25 +31,28 @@ class Recipe
         recipes_list.each do |recipe|
             new(recipe["title"], recipe["href"], recipe["ingredients"])
         end
+        self.show_recipes
     end
 
     def self.all_recipes
         @@all_recipes
     end
 
-    def self.display_recipes_by_input
+    def self.user_input_call_get_recipes
         puts "Please enter ingredient name:"
         input = gets.chomp
         string = input.gsub(" ", ", ")
         self.create_recipes_from_list(string)
+    end
 
-        puts "Here is the list of recipes by #{input}:"
-        self.all_recipes.each do |recipe|
-            puts recipe
-        
+    def self.show_recipes
+        #binding.pry
+        puts "Here is the list of recipes:"
+        all_recipes.each do |recipe|
+          puts "\e[32m Recipe: #{recipe.title.strip;} | Ingredients: #{recipe.ingredients.strip}\e[0m"
         end
     end
 
 end
 
-Recipe.display_recipes_by_input
+Recipe.user_input_call_get_recipes
